@@ -1,8 +1,8 @@
 from django.views.generic import FormView, TemplateView
-from .forms import UserRegistrationForm, UserUpdateForm
+from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordChangeForm
 from django.contrib.auth import login
 from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.db import transaction, DatabaseError
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -68,5 +68,15 @@ class UserUpdateView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse_lazy("home"))
-        return super().get(request, *args, **kwargs)
+            return super().get(request, *args, **kwargs)
+        return redirect(reverse_lazy("home"))
+
+
+class UserPasswordChangeView(PasswordChangeView):
+    template_name = "password_change_form.html"
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy("profile")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been changed successfully!")
+        return super().form_valid(form)

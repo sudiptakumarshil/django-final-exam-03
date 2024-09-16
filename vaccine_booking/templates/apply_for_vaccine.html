@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Apply for Vaccine
+{% endblock %}
+
+{% block content %}
+  {% load crispy_forms_tags %}
+  <div class="container mb-4">
+    <h3 style="width: 50%; margin: auto;" class="mt-2"><b>Apply for Vaccine</b></h3>
+    <h3 style="width: 50%; margin: auto;" class="mt-2"><b>Campaign: {{ campaign.title }}</b></h3>
+    <h5 style="width: 50%; margin: auto;" class="mt-2">From: {{ campaign.start_date }} To {{ campaign.end_date }}</h5>
+    <h5 style="width: 50%; margin: auto;" class="mb-4">Location: {{ campaign.location }}</h5>
+
+    <input type="hidden" id="end_date" value="{{ campaign.end_date|date:'Y-m-d\\TH:i' }}" />
+    <form action="" autocomplete="off" method="POST" style="width: 50%; margin: auto;" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-primary btn-sm">Submit</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      let endDate = new Date($('#end_date').val())
+      $('.datetimeinput').change(function () {
+        let inputDate = new Date($(this).val())
+        if (inputDate > endDate) {
+          $(this).val(null)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Sorry! Please select a date within the campaign end date.'
+          })
+        }
+      })
+    })
+  </script>
+{% endblock %}

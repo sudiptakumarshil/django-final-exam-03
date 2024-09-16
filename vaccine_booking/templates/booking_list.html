@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Vaccine Campaign
+  Vaccine Booking List
 {% endblock %}
 
 {% block content %}
@@ -17,11 +17,11 @@
             {% endfor %}
           </div>
         {% endif %}
-        <h3 class="mt-4 mb-4"><b>Vaccine Campaign</b></h3>
+        <h3 class="mt-4 mb-4"><b>Vaccine Booking List</b></h3>
         {% if request.user.account.type == 'Doctor' %}
           <div class="d-flex justify-content-end">
-            <a href="{% url 'campaign.create' %}" class="btn btn-primary btn-sm">Create</a> &nbsp;
-            <a href="{% url 'booking.index' %}" class="btn btn-secondary btn-sm">Booking List</a>
+            <a href="{% url 'campaign.create' %}" class="btn btn-primary btn-sm">Campaign Create</a> &nbsp;
+            <a href="{% url 'campaign.index' %}" class="btn btn-secondary btn-sm">Campaign List</a>
           </div>
         {% endif %}
 
@@ -29,33 +29,26 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Title</th>
-              <th>Location</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Action</th>
+              <th>Patient</th>
+              <th>Phone</th>
+              <th>Campaign</th>
+              <th>Date</th>
+              {% comment %} <th>Action</th> {% endcomment %}
             </tr>
           </thead>
           <tbody>
-            {% for object in campaigns %}
+            {% for object in booking %}
               <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ object.title }}</td>
-                <td>{{ object.location }}</td>
-                <td>{{ object.start_date|date:'F j, Y g:i A' }}</td>
-                <td>{{ object.end_date|date:'F j, Y g:i A' }}</td>
-                <td>
+                <td>{{ object.patient.user.first_name }} {{ object.patient.user.last_name }}</td>
+                <td>{{ object.phone }}</td>
+                <td>{{ object.vaccine_campaign.title }}</td>
+                <td>{{ object.date|date:'F j, Y g:i A' }}</td>
+                {% comment %} <td>
                   {% if request.user.account.type == 'Doctor' %}
                     <a href="{% url 'campaign.edit' object.id %}" class="btn btn-warning btn-sm">Edit</a>
                   {% endif %}
-                  {% if request.user.account.type == 'Patient' %}
-                    {% if object.id in already_applied %}
-                      <span class="badge bg-danger">Already Applied</span>
-                    {% else %}
-                      <a href="{% url 'apply_for_vaccine' object.id %}" class="btn btn-success btn-sm">Apply For Vaccine</a>
-                    {% endif %}
-                  {% endif %}
-                </td>
+                </td> {% endcomment %}
               </tr>
             {% endfor %}
           </tbody>

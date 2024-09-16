@@ -5,6 +5,7 @@ from django.views.generic import CreateView, UpdateView, ListView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
+from vaccine_booking.models import VaccineBooking
 
 
 class CreateVaccineCampaign(LoginRequiredMixin, CreateView):
@@ -59,9 +60,12 @@ class VaccineCampaignList(LoginRequiredMixin, ListView):
     template_name = "list.html"
     context_object_name = "campaigns"
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.account.type == "Doctor":
-            return HttpResponse(
-                "You do not have permission to view this page.", status=403
-            )
-        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        campaign_ids = VaccineBooking.objects.filter(
+            patient=self.request.user.account
+        ).values_list("vaccine_campaign_id", flat=True)
+
+        context["already_applied"] = list(campaign_ids)
+  
+        return context

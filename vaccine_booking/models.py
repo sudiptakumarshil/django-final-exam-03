@@ -10,5 +10,6 @@ class VaccineBooking(models.Model):
     patient = models.OneToOneField(
         UserAccount, related_name="patient", on_delete=models.CASCADE
     )
+    phone = models.IntegerField()
     date = models.DateTimeField()
-    is_completed = models.BooleanField()
+    is_completed = models.BooleanField(default=False)

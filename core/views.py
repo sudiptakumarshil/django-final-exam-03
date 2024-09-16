@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-
+from user.models import UserAccount
+from vaccine_campaign.models import VaccineCampaign
 
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
@@ -10,8 +11,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context["categories"] = Category.objects.filter(status=True).values(
-        #     "id", "name", "slug"
-        # )
-        # context["books"] = Book.objects.filter(status=True)[:5]
+        context["total_doctor"] = UserAccount.objects.filter(type="Doctor").count()
+        context["total_patient"] = UserAccount.objects.filter(type="Patient").count()
+        context['total_campaign'] = VaccineCampaign.objects.count()
         return context

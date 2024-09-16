@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django import forms
 from .constants import GENDER_TYPE, USER_TYPE
 from django.contrib.auth.models import User
@@ -49,6 +49,7 @@ class UserRegistrationForm(UserCreationForm):
 class UserUpdateForm(forms.ModelForm):
     birth_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     gender = forms.ChoiceField(choices=GENDER_TYPE)
+    nid = forms.CharField(max_length=100)
 
     class Meta:
         model = User
@@ -56,6 +57,9 @@ class UserUpdateForm(forms.ModelForm):
             "first_name",
             "last_name",
             "email",
+            "birth_date",
+            "gender",
+            "nid",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -66,18 +70,13 @@ class UserUpdateForm(forms.ModelForm):
         if self.instance:
             try:
                 user_account = self.instance.account
-                user_address = self.instance.address
             except UserAccount.DoesNotExist:
                 user_account = None
-                user_address = None
 
             if user_account:
                 self.fields["gender"].initial = user_account.gender
                 self.fields["birth_date"].initial = user_account.birth_date
-                self.fields["street_address"].initial = user_address.street_address
-                self.fields["city"].initial = user_address.city
-                self.fields["postal_code"].initial = user_address.postal_code
-                self.fields["country"].initial = user_address.country
+                self.fields["nid"].initial = user_account.nid
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -86,5 +85,14 @@ class UserUpdateForm(forms.ModelForm):
             user_account, created = UserAccount.objects.get_or_create(user=user)
             user_account.gender = self.cleaned_data["gender"]
             user_account.birth_date = self.cleaned_data["birth_date"]
+            user_account.nid = self.cleaned_data["nid"]
             user_account.save()
         return user
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomPasswordChangeForm, self).__init__(*args, **kwargs)
+        self.fields["old_password"].widget.attrs.update({"class": "form-control"})
+        self.fields["new_password1"].widget.attrs.update({"class": "form-control"})
+        self.fields["new_password2"].widget.attrs.update({"class": "form-control"})

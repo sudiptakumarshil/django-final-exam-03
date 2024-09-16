@@ -24,4 +24,5 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("auth/", include("user.urls")),
     path("campaign/", include("vaccine_campaign.urls")),
+    path("vaccine/", include("vaccine_booking.urls")),
 ]
