@@ -1,4 +1,4 @@
-from django.views.generic import FormView, TemplateView, View
+from django.views.generic import FormView, TemplateView
 from .forms import UserRegistrationForm, UserUpdateForm
 from django.contrib.auth import login
 from django.urls import reverse_lazy
@@ -8,13 +8,17 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect
 
 
 class UserRegistrationView(FormView):
     template_name = "register.html"
     form_class = UserRegistrationForm
     success_url = reverse_lazy("auth.login")
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy("home"))
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         try:
@@ -29,6 +33,11 @@ class UserRegistrationView(FormView):
 
 class UserLoginView(LoginView):
     template_name = "login.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy("home"))
+        return super().get(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy("home")
@@ -45,7 +54,6 @@ class UserUpdateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = UserUpdateForm(instance=self.request.user)
-        context["borrowed_books"] = BorrowBook.objects.filter(user=self.request.user)
         return context
 
     def post(self, request, *args, **kwargs):
@@ -58,20 +66,7 @@ class UserUpdateView(TemplateView):
         context["form"] = form
         return self.render_to_response(context)
 
-
-class ReturnBookView(View):
-    def get(self, request, id):
-        try:
-            with transaction.atomic():
-                obj = get_object_or_404(BorrowBook, id=id)
-
-                obj.return_date = timezone.now()
-                obj.save()
-
-                obj.user.account.balance += obj.price
-                obj.user.account.save()
-
-        except DatabaseError as e:
-            print(f"An error occurred: {e}")
-
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy("home"))
+        return super().get(request, *args, **kwargs)
