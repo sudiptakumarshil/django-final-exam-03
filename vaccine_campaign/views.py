@@ -1,11 +1,13 @@
 from . import forms
-from .models import VaccineCampaign
+from .models import VaccineCampaign, VaccineCampaignReview
 from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, ListView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from vaccine_booking.models import VaccineBooking
+from django.views.generic import FormView
+from django.shortcuts import get_object_or_404
 
 
 class CreateVaccineCampaign(LoginRequiredMixin, CreateView):
@@ -67,5 +69,36 @@ class VaccineCampaignList(LoginRequiredMixin, ListView):
         ).values_list("vaccine_campaign_id", flat=True)
 
         context["already_applied"] = list(campaign_ids)
-  
+
         return context
+
+
+class CampaignReviewView(FormView):
+    template_name = "review.html"
+    form_class = forms.CampaignReviewForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["campaign"] = get_object_or_404(
+            VaccineCampaign, pk=self.kwargs.get("pk")
+        )
+        if self.request.user.account.type == "Patient":
+            context["reviews"] = VaccineCampaignReview.objects.filter(
+                vaccine_campaign=context["campaign"], patient=self.request.user.account
+            )
+        else:
+            context["reviews"] = VaccineCampaignReview.objects.filter(
+                vaccine_campaign=context["campaign"]
+            )
+        return context
+
+    def form_valid(self, form):
+        campaign = get_object_or_404(VaccineCampaign, pk=self.kwargs.get("pk"))
+        review = form.save(commit=False)
+        review.vaccine_campaign = campaign
+        review.patient = self.request.user.account
+        review.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("campaign.review", kwargs={"pk": self.kwargs.get("pk")})

@@ -2,6 +2,7 @@ from django import forms
 from .models import VaccineCampaign
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from .models import VaccineCampaignReview
 
 
 class VaccineCampaignForm(forms.ModelForm):
@@ -30,3 +31,16 @@ class VaccineCampaignForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_method = "post"
         self.helper.add_input(Submit("submit", "Submit"))
+
+
+class CampaignReviewForm(forms.ModelForm):
+    comment = forms.Textarea()
+
+    class Meta:
+        model = VaccineCampaignReview
+        fields = ["comment"]
+
+    def __init__(self, *args, **kwargs):
+        super(CampaignReviewForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs["class"] = "form-control"

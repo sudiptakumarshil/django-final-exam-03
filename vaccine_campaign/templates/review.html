@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Vaccine Campaign
+{% endblock %}
+
+{% block content %}
+  {% load crispy_forms_tags %}
+  <div class="container mb-4">
+    <h3 style="width: 50%; margin: auto;" class="mt-4 mb-4"><b>Vaccine Campaign Review</b></h3>
+    
+    {% if request.user.account.type == 'Patient' %}
+      <form action="" autocomplete="off" method="POST" style="width: 50%; margin: auto;" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex justify-content-center">
+          <button class="btn btn-primary btn-sm">Submit</button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div style="width: 50%; margin: auto;">
+      <h3>Reviews:</h3>
+      {% if reviews %}
+        <ul>
+          {% for review in reviews %}
+            <li>
+              <strong>{{ review.patient.user.first_name }} {{ review.patient.user.last_name }}</strong> says:<p>{{ review.comment }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No reviews yet.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
