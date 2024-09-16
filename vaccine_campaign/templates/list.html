@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Vaccine Campaign
+{% endblock %}
+
+{% block content %}
+  {% load crispy_forms_tags %}
+  <div class="container mb-4">
+    <div class="row">
+      <div class="col-md-1 col-lg-1"></div>
+      <div class="col-md-10 col-lg-10">
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <h3 class="mt-4 mb-4"><b>Vaccine Campaign</b></h3>
+        <div class="d-flex justify-content-end">
+          <a href="{% url 'campaign.create' %}" class="btn btn-primary btn-sm">Create</a>
+        </div>
+        <table class="table table-bordered mt-4">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Location</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in campaigns %}
+              <tr>
+                <th>{{ forloop.counter }}</th>
+                <td>{{ object.location }}</td>
+                <td>{{ object.start_date|date:'F j, Y g:i A' }}</td>
+                <td>{{ object.end_date|date:'F j, Y g:i A' }}</td>
+                <td>
+                  <a href="{% url 'campaign.edit' object.id %}" class="btn btn-warning btn-sm">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-1 col-lg-1"></div>
+    </div>
+  </div>
+{% endblock %}

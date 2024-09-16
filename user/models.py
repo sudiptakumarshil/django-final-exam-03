@@ -11,4 +11,4 @@ class UserAccount(models.Model):
     type = models.CharField(max_length=20, choices=USER_TYPE, default="Patient")
 
     def __str__(self):
-        return str(self.user.name)
+        return str(self.user.first_name)
