@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from core.decorators import doctor_required
+from datetime import timedelta
 
 
 @login_required(login_url=reverse_lazy("auth.login"))
@@ -21,6 +22,7 @@ def apply_for_vaccine(request, campaign_id):
             booking = form.save(commit=False)
             booking.patient = request.user.account
             booking.vaccine_campaign = campaign
+            booking.next_vaccine_date = booking.date + timedelta(days=5)
             booking.save()
             messages.success(request, "You have successfully applied for the vaccine!")
             return redirect("campaign.index")

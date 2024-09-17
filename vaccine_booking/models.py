@@ -12,4 +12,5 @@ class VaccineBooking(models.Model):
     )
     phone = models.IntegerField()
     date = models.DateTimeField()
+    next_vaccine_date = models.DateTimeField()
     is_completed = models.BooleanField(default=False)

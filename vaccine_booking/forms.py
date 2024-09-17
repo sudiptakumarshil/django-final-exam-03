@@ -11,6 +11,7 @@ class VaccineBookingForm(forms.ModelForm):
         widgets = {
             "vaccine_campaign": forms.HiddenInput(),
             "is_completed": forms.HiddenInput(),
+            "next_vaccine_date": forms.HiddenInput(),
             "date": forms.DateTimeInput(
                 attrs={
                     "type": "datetime-local",
@@ -24,6 +25,7 @@ class VaccineBookingForm(forms.ModelForm):
         super(VaccineBookingForm, self).__init__(*args, **kwargs)
         self.fields["vaccine_campaign"].required = False
         self.fields["is_completed"].required = False
+        self.fields["next_vaccine_date"].required = False
         self.helper = FormHelper(self)
         self.helper.form_method = "post"
         self.helper.add_input(Submit("submit", "Submit"))

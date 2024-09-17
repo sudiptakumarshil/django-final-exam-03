@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from vaccine_booking.models import VaccineBooking
 from django.views.generic import FormView
 from django.shortcuts import get_object_or_404
+from django.utils.dateformat import DateFormat
 
 
 class CreateVaccineCampaign(LoginRequiredMixin, CreateView):
@@ -69,7 +70,20 @@ class VaccineCampaignList(LoginRequiredMixin, ListView):
         ).values_list("vaccine_campaign_id", flat=True)
 
         context["already_applied"] = list(campaign_ids)
+        vaccine_bookings = VaccineBooking.objects.filter(
+            patient=self.request.user.account
+        ).values("vaccine_campaign_id", "next_vaccine_date")
 
+        context["next_vaccine"] = []
+        for booking in vaccine_bookings:
+            context["next_vaccine"].append(
+                {
+                    "vaccine_campaign_id": booking["vaccine_campaign_id"],
+                    "next_vaccine_date": DateFormat(booking["next_vaccine_date"]).format(
+                        "F j, Y g:i A"
+                    ),
+                }
+            )
         return context
 
 

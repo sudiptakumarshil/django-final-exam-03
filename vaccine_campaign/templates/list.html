@@ -34,6 +34,9 @@
                 <th>Location</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                {% if request.user.account.type == 'Patient' %}
+                  <th>Next Vaccine Date</th>
+                {% endif %}
                 <th>Action</th>
               </tr>
             </thead>
@@ -45,6 +48,15 @@
                   <td>{{ object.location }}</td>
                   <td>{{ object.start_date|date:'F j, Y g:i A' }}</td>
                   <td>{{ object.end_date|date:'F j, Y g:i A' }}</td>
+                  {% if request.user.account.type == 'Patient' %}
+                    <td>
+                      {% for booking in next_vaccine %}
+                        {% if booking.vaccine_campaign_id == object.id %}
+                          {{ booking.next_vaccine_date }}
+                        {% endif %}
+                      {% endfor %}
+                    </td>
+                  {% endif %}
                   <td>
                     <div class="d-flex">
                       {% if request.user.account.type == 'Doctor' %}
