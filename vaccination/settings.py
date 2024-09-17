@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-4ez+cm4c=^s$-d($!2!)l(p*revmnrhao&bnc4)17aurp5%*yb
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['https://django-final-exam-03.onrender.com', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['https://django-final-exam-03-1.onrender.com', '0.0.0.0', 'localhost']
 
 
 
