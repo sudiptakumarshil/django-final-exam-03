@@ -41,7 +41,7 @@
               <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ object.patient.user.first_name }} {{ object.patient.user.last_name }}</td>
-                <td>{{ object.phone }}</td>
+                <td>0{{ object.phone }}</td>
                 <td>{{ object.vaccine_campaign.title }}</td>
                 <td>{{ object.date|date:'F j, Y g:i A' }}</td>
                 {% comment %} <td>
