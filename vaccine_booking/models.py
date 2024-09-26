@@ -7,7 +7,7 @@ class VaccineBooking(models.Model):
     vaccine_campaign = models.ForeignKey(
         VaccineCampaign, related_name="vaccine_campaign", on_delete=models.CASCADE
     )
-    patient = models.OneToOneField(
+    patient = models.ForeignKey(
         UserAccount, related_name="patient", on_delete=models.CASCADE
     )
     phone = models.IntegerField()
